@@ -1,1 +1,5 @@
-# repitition
+# Repitition
+
+## Tech Stack
+- React Native
+- Typescript
