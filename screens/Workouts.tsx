@@ -3,7 +3,8 @@ import { Text, View, Button } from "react-native";
 import { RootStackParamList } from "./types";
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
-export default function HomeScreen({ navigation }: Props) {
+
+export default function WorkoutsScreen({ navigation }: Props) {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text>Home Screen</Text>

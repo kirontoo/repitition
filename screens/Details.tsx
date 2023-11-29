@@ -1,6 +1,10 @@
 import { Button, Text, View } from "react-native";
+import { RootStackParamList } from "./types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-export default function DetailsScreen({ navigation }) {
+type Props = NativeStackScreenProps<RootStackParamList, 'Details'>;
+
+export default function DetailsScreen({ navigation }: Props) {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <Text>Details Screen</Text>

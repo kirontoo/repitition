@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet } from 'react-native';
-import HomeScreen from './screens/Home';
+import WorkoutsScreen from './screens/Workouts';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DetailsScreen from './screens/Details';
 
@@ -21,7 +21,7 @@ export default function App() {
           },
         }}
       >
-        <Stack.Screen name="Home" component={HomeScreen}
+        <Stack.Screen name="Home" component={WorkoutsScreen}
           options={{
             title: 'My Workouts',
           }} />
