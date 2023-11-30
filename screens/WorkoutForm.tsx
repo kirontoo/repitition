@@ -3,8 +3,8 @@ import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { RootStackParamList } from "./types";
 import { useState } from "react";
 
-type Props = NativeStackScreenProps<RootStackParamList, "NewWorkout">;
-export default function NewWorkoutScreen({ navigation }: Props) {
+type Props = NativeStackScreenProps<RootStackParamList, "WorkoutForm">;
+export default function WorkoutFormScreen({ navigation }: Props) {
   const [workoutName, setWorkoutName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   return (

@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import WorkoutsScreen from './screens/Workouts';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DetailsScreen from './screens/Details';
-import NewWorkoutScreen from './screens/NewWorkout';
+import WorkoutFormScreen from './screens/WorkoutForm';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ExerciseForm from './screens/ExerciseForm';
 import ExerciseList from './screens/ExerciseList';
@@ -31,7 +31,7 @@ export default function App() {
               title: 'My Workouts',
             }} />
           <Stack.Screen name={ NavigationRoute.Details } component={DetailsScreen} />
-          <Stack.Screen name={ NavigationRoute.NewWorkout } component={NewWorkoutScreen} />
+          <Stack.Screen name={ NavigationRoute.WorkoutForm } component={WorkoutFormScreen} />
           <Stack.Screen name={ NavigationRoute.ExerciseForm } component={ExerciseForm} />
           <Stack.Screen name={ NavigationRoute.ExerciseList } component={ExerciseList} />
         </Stack.Navigator>

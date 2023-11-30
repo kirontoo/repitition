@@ -1,6 +1,5 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Text, View, Button, SafeAreaView, FlatList } from "react-native";
-import { RootStackParamList } from "./types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack"; import { Text, View, Button, FlatList } from "react-native";
+import { NavigationRoute, RootStackParamList } from "./types";
 import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
@@ -67,7 +66,7 @@ export default function WorkoutsScreen({ navigation }: Props) {
       }}>
       <Button
         title="Create New Workout"
-        onPress={() => navigation.navigate("NewWorkout")}
+        onPress={() => navigation.navigate(NavigationRoute.WorkoutFormScreen)}
       />
       </View>
     </View>
