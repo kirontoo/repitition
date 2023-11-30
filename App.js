@@ -1,5 +1,5 @@
 import { NavigationContainer } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
+import { NavigationRoute } from './screens/types';
 import { StyleSheet } from 'react-native';
 import WorkoutsScreen from './screens/Workouts';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -24,12 +24,12 @@ export default function App() {
             },
           }}
         >
-          <Stack.Screen name="Home" component={WorkoutsScreen}
+          <Stack.Screen name={NavigationRoute.Home} component={WorkoutsScreen}
             options={{
               title: 'My Workouts',
             }} />
-          <Stack.Screen name="Details" component={DetailsScreen} />
-          <Stack.Screen name="NewWorkout" component={NewWorkoutScreen} />
+          <Stack.Screen name={ NavigationRoute.Details } component={DetailsScreen} />
+          <Stack.Screen name={ NavigationRoute.NewWorkout } component={NewWorkoutScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
