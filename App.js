@@ -6,6 +6,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DetailsScreen from './screens/Details';
 import NewWorkoutScreen from './screens/NewWorkout';
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import ExerciseForm from './screens/ExerciseForm';
+import ExerciseList from './screens/ExerciseList';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +32,8 @@ export default function App() {
             }} />
           <Stack.Screen name={ NavigationRoute.Details } component={DetailsScreen} />
           <Stack.Screen name={ NavigationRoute.NewWorkout } component={NewWorkoutScreen} />
+          <Stack.Screen name={ NavigationRoute.ExerciseForm } component={ExerciseForm} />
+          <Stack.Screen name={ NavigationRoute.ExerciseList } component={ExerciseList} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>
