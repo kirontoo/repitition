@@ -1,6 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { RootStackParamList } from "./types";
+import { NavigationRoute, RootStackParamList } from "./types";
 import { useState } from "react";
 
 type Props = NativeStackScreenProps<RootStackParamList, "WorkoutForm">;
@@ -21,7 +21,10 @@ export default function WorkoutFormScreen({ navigation }: Props) {
         onChangeText={setDescription}
         value={description}
       />
-      <Button title="Add Exercises" onPress={() => {}}/>
+      <Button
+        title="Add Exercises"
+        onPress={() => navigation.navigate(NavigationRoute.ExerciseList)}
+      />
     </View>
   );
 }

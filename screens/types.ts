@@ -1,4 +1,4 @@
-export const NavigationRoute: Record<string, keyof RootStackParamList > = {
+export const NavigationRoute: Record<string, keyof RootStackParamList> = {
   WorkoutForm: "WorkoutForm",
   Home: "Home",
   Details: "Details",

@@ -1,9 +1,9 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { RootStackParamList } from "./types";
+import { NavigationRoute, RootStackParamList } from "./types";
 import { useState } from "react";
 
-type Props = NativeStackScreenProps<RootStackParamList, "WorkoutForm">;
+type Props = NativeStackScreenProps<RootStackParamList, "ExerciseForm">;
 export default function ExerciseForm({ navigation }: Props) {
   const [exerciseName, setExerciseName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
@@ -29,7 +29,7 @@ export default function ExerciseForm({ navigation }: Props) {
         onChangeText={setDuration}
         value={duration}
       />
-      <Button title="Add Exercise" onPress={() => {}}/>
+      <Button title="Add Exercise" onPress={() => navigation.navigate(NavigationRoute.ExerciseList)} />
     </View>
   );
 }

@@ -1,8 +1,7 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack"; import { Text, View, Button, FlatList } from "react-native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { Text, View, Button, FlatList } from "react-native";
 import { NavigationRoute, RootStackParamList } from "./types";
-import {
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
@@ -56,18 +55,22 @@ export default function WorkoutsScreen({ navigation }: Props) {
         renderItem={({ item }) => <Item title={item.title} />}
         keyExtractor={(item) => item.id}
       />
-      <View style={{
-        flex: 0,
-        flexDirection: "row",
-        alignItems: "flex-end",
-        justifyContent: "flex-end",
-        gap: 16,
-        width: "100%"
-      }}>
-      <Button
-        title="Create New Workout"
-        onPress={() => navigation.navigate(NavigationRoute.WorkoutFormScreen)}
-      />
+      <View
+        style={{
+          flex: 0,
+          flexDirection: "row",
+          alignItems: "flex-end",
+          justifyContent: "flex-end",
+          gap: 16,
+          width: "100%",
+        }}
+      >
+        <Button
+          title="Create New Workout"
+          onPress={() => {
+            navigation.navigate(NavigationRoute.WorkoutForm);
+          }}
+        />
       </View>
     </View>
   );
