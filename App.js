@@ -8,35 +8,55 @@ import WorkoutFormScreen from './screens/WorkoutForm';
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ExerciseForm from './screens/ExerciseForm';
 import ExerciseList from './screens/ExerciseList';
+import { TamaguiProvider } from 'tamagui';
+import config from './tamagui.config';
+import { useFonts } from 'expo-font';
+import { useEffect } from 'react';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [loaded] = useFonts({
+    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
+    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
+  });
+
+  useEffect(() => {
+    if (loaded) {
+      // can hide splash screen here
+    }
+  }, [loaded])
+
+  if (!loaded) {
+    return null;
+  }
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: '#f4511e',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          }}
-        >
-          <Stack.Screen name={NavigationRoute.Home} component={WorkoutsScreen}
-            options={{
-              title: 'My Workouts',
-            }} />
-          <Stack.Screen name={ NavigationRoute.Details } component={DetailsScreen} />
-          <Stack.Screen name={ NavigationRoute.WorkoutForm } component={WorkoutFormScreen} />
-          <Stack.Screen name={ NavigationRoute.ExerciseForm } component={ExerciseForm} />
-          <Stack.Screen name={ NavigationRoute.ExerciseList } component={ExerciseList} />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+    <TamaguiProvider config={config}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: '#f4511e',
+              },
+              headerTintColor: '#fff',
+              headerTitleStyle: {
+                fontWeight: 'bold',
+              },
+            }}
+          >
+            <Stack.Screen name={NavigationRoute.Home} component={WorkoutsScreen}
+              options={{
+                title: 'My Workouts',
+              }} />
+            <Stack.Screen name={NavigationRoute.Details} component={DetailsScreen} />
+            <Stack.Screen name={NavigationRoute.WorkoutForm} component={WorkoutFormScreen} />
+            <Stack.Screen name={NavigationRoute.ExerciseForm} component={ExerciseForm} />
+            <Stack.Screen name={NavigationRoute.ExerciseList} component={ExerciseList} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </TamaguiProvider>
   )
 }
 
