@@ -4,7 +4,7 @@ export const NavigationRoute: Record<string, keyof RootStackParamList> = {
   Details: "Details",
   ExerciseForm: "ExerciseForm",
   ExerciseList: "ExerciseList",
-  WorkoutScreen: "WorkoutItem"
+  WorkoutScreen: "WorkoutScreen"
 }
 
 export type RootStackParamList = {
