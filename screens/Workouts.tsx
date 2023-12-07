@@ -1,44 +1,32 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Text, View, Button, FlatList } from "react-native";
+import { Text, FlatList } from "react-native";
 import { NavigationRoute, RootStackParamList } from "./types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Stack, Button } from 'tamagui';
+import data from '../data.json';
+
+const WorkoutData: Workout[] = data;
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
-type ItemProps = { title: string };
-type Item = {
-  title: string;
-  id: string;
-};
+type ItemProps = { name: string };
 
-const Item = ({ title }: ItemProps) => (
-  <View
-    style={{
-      padding: 4,
-      paddingVertical: 6,
-      backgroundColor: "#85959b",
-      borderRadius: 2,
-      marginVertical: 2,
-    }}
-  >
-    <Text style={{ fontSize: 20 }}>{title}</Text>
-  </View>
+const Item = ({ name }: ItemProps) => (
+  <Stack>
+    <Text style={{ fontSize: 20 }}>{name}</Text>
+  </Stack>
 );
-
-const data: Item[] = [
-  { title: "workout A", id: "0" },
-  { title: "workout B", id: "1" },
-];
 
 export default function WorkoutsScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
   return (
-    <View
+    <Stack
+      spaceDirection="vertical"
+      f={1}
+      fd="column"
+      justifyContent="space-between"
+      alignItems="flex-start"
       style={{
-        flex: 1,
-        justifyContent: "space-between",
-        alignItems: "flex-start",
-
         // Paddings to handle safe area
         paddingTop: insets.top,
         paddingBottom: insets.bottom + 16,
@@ -51,11 +39,11 @@ export default function WorkoutsScreen({ navigation }: Props) {
           flex: 1,
           width: "100%",
         }}
-        data={data}
-        renderItem={({ item }) => <Item title={item.title} />}
+        data={WorkoutData}
+        renderItem={({ item }) => <Item name={item.name} />}
         keyExtractor={(item) => item.id}
       />
-      <View
+      <Stack
         style={{
           flex: 0,
           flexDirection: "row",
@@ -66,12 +54,13 @@ export default function WorkoutsScreen({ navigation }: Props) {
         }}
       >
         <Button
-          title="Create New Workout"
           onPress={() => {
             navigation.navigate(NavigationRoute.WorkoutForm);
           }}
-        />
-      </View>
-    </View>
+        >
+          Create New Workout
+        </Button>
+      </Stack>
+    </Stack>
   );
 }
