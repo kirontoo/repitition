@@ -1,38 +1,48 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Text, FlatList } from "react-native";
+import { FlatList } from "react-native";
 import { NavigationRoute, RootStackParamList } from "./types";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Stack, Button } from 'tamagui';
-import data from '../data.json';
+import { Text, Stack, Button, YGroup, YStack, XGroup, XStack } from "tamagui";
+import data from "../data.json";
 
 const WorkoutData: Workout[] = data;
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
-type ItemProps = { name: string };
-
-const Item = ({ name }: ItemProps) => (
-  <Stack>
-    <Text style={{ fontSize: 20 }}>{name}</Text>
-  </Stack>
-);
+type ItemProps = { name: string; reps: number };
 
 export default function WorkoutsScreen({ navigation }: Props) {
-  const insets = useSafeAreaInsets();
+
+  const Item = ({ name, reps }: ItemProps) => (
+    <Button
+      margin="$1"
+      onPress={() => navigation.navigate(NavigationRoute.WorkoutScreen)}
+      justifyContent="flex-start"
+    >
+      <XStack space flex={1} justifyContent="space-between" alignItems="center">
+        <Text fontSize="$5">{name}</Text>
+        <XStack 
+          borderRadius="$6" 
+          borderColor="white" 
+          borderWidth={1} 
+          width="$2" 
+          height="$2" 
+          justifyContent="center" 
+          alignItems="center"
+        >
+          <Text>{reps}</Text>
+        </XStack>
+      </XStack>
+    </Button>
+  );
+
   return (
-    <Stack
-      spaceDirection="vertical"
-      f={1}
-      fd="column"
-      justifyContent="space-between"
-      alignItems="flex-start"
-      style={{
-        // Paddings to handle safe area
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom + 16,
-        paddingLeft: insets.left + 16,
-        paddingRight: insets.right + 16,
-      }}
+    <YStack
+      flex={1}
+      space="$2"
+      borderWidth={2}
+      borderColor="$color"
+      borderRadius="$4"
+      padding="$2"
     >
       <FlatList
         style={{
@@ -40,7 +50,7 @@ export default function WorkoutsScreen({ navigation }: Props) {
           width: "100%",
         }}
         data={WorkoutData}
-        renderItem={({ item }) => <Item name={item.name} />}
+        renderItem={({ item }) => <Item name={item.name} reps={item.reps} />}
         keyExtractor={(item) => item.id}
       />
       <Stack
@@ -61,6 +71,6 @@ export default function WorkoutsScreen({ navigation }: Props) {
           Create New Workout
         </Button>
       </Stack>
-    </Stack>
+    </YStack>
   );
 }
