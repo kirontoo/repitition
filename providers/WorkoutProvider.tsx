@@ -1,6 +1,6 @@
 import { useList } from "@uidotdev/usehooks";
 import { useContext, createContext, ReactNode } from "react";
-import { nanoid } from "nanoid";
+import uuid from "react-native-uuid";
 
 interface NewWorkoutInput {
   name: string;
@@ -65,7 +65,7 @@ export const useWorkoutProvider = () => {
 
   const createWorkout = (data: NewWorkoutInput) => {
     const createdAt = new Date().toISOString();
-    const id = nanoid();
+    const id = uuid.v4().toString();
     const newWorkout = {
       ...data,
       createdAt,
