@@ -1,16 +1,15 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FlatList } from "react-native";
 import { NavigationRoute, RootStackParamList } from "./types";
-import { Text, Stack, Button, YGroup, YStack, XGroup, XStack } from "tamagui";
-import data from "../data.json";
-
-const WorkoutData: Workout[] = data;
+import { Text, Stack, Button, YStack, XStack } from "tamagui";
+import { useWorkoutContext } from "../providers/WorkoutProvider";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 
 type ItemProps = { name: string; reps: number };
 
 export default function WorkoutsScreen({ navigation }: Props) {
+  const data = useWorkoutContext();
 
   const Item = ({ name, reps }: ItemProps) => (
     <Button
@@ -49,7 +48,7 @@ export default function WorkoutsScreen({ navigation }: Props) {
           flex: 1,
           width: "100%",
         }}
-        data={WorkoutData}
+        data={data.workouts}
         renderItem={({ item }) => <Item name={item.name} reps={item.reps} />}
         keyExtractor={(item) => item.id}
       />

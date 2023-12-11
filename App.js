@@ -12,6 +12,7 @@ import { Theme, TamaguiProvider } from 'tamagui';
 import config from './tamagui.config';
 import { useFonts } from 'expo-font';
 import { useEffect } from 'react';
+import { WorkoutProvider } from './providers/WorkoutProvider';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,19 +35,21 @@ export default function App() {
     <TamaguiProvider config={config}>
       <Theme name="dark">
         <SafeAreaProvider>
-          <NavigationContainer>
-            <Stack.Navigator>
-              <Stack.Screen name={NavigationRoute.Home} component={WorkoutsScreen}
-                options={{
-                  title: 'My Workouts',
-                }} />
-              <Stack.Screen name={NavigationRoute.Details} component={DetailsScreen} />
-              <Stack.Screen name={NavigationRoute.WorkoutForm} component={WorkoutFormScreen} />
-              <Stack.Screen name={NavigationRoute.ExerciseForm} component={ExerciseForm} />
-              <Stack.Screen name={NavigationRoute.ExerciseList} component={ExerciseList} />
-              <Stack.Screen name={NavigationRoute.WorkoutScreen} component={WorkoutScreen} />
-            </Stack.Navigator>
-          </NavigationContainer>
+          <WorkoutProvider>
+            <NavigationContainer>
+              <Stack.Navigator>
+                <Stack.Screen name={NavigationRoute.Home} component={WorkoutsScreen}
+                  options={{
+                    title: 'My Workouts',
+                  }} />
+                <Stack.Screen name={NavigationRoute.Details} component={DetailsScreen} />
+                <Stack.Screen name={NavigationRoute.WorkoutForm} component={WorkoutFormScreen} />
+                <Stack.Screen name={NavigationRoute.ExerciseForm} component={ExerciseForm} />
+                <Stack.Screen name={NavigationRoute.ExerciseList} component={ExerciseList} />
+                <Stack.Screen name={NavigationRoute.WorkoutScreen} component={WorkoutScreen} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </WorkoutProvider>
         </SafeAreaProvider>
       </Theme>
     </TamaguiProvider>
