@@ -1,6 +1,13 @@
 import { useList } from "@uidotdev/usehooks";
-import { useContext, createContext, ReactNode } from "react";
+import {
+  useContext,
+  createContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 import uuid from "react-native-uuid";
+import { getData, storeData } from "../utils/storage";
 
 interface NewWorkoutInput {
   name: string;
@@ -13,6 +20,7 @@ type WorkoutContextValue = {
   editWorkout: (id: string, data: Partial<Workout>) => void;
   deleteWorkout: (id: string) => void;
   createWorkout: (data: NewWorkoutInput) => void;
+  loadingWorkouts: boolean;
 };
 
 export const WorkoutContext = createContext<WorkoutContextValue>({
@@ -20,6 +28,7 @@ export const WorkoutContext = createContext<WorkoutContextValue>({
   editWorkout: (_i, _d) => null,
   deleteWorkout: (_) => null,
   createWorkout: (_) => null,
+  loadingWorkouts: false,
 });
 
 export const useWorkoutContext = () => {
@@ -34,6 +43,22 @@ export const useWorkoutContext = () => {
 
 export const useWorkoutProvider = () => {
   const [workouts, workoutsControl] = useList<Workout>([]);
+  const [loadingWorkouts, setLoadingWorkouts] = useState<boolean>(false);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    setLoadingWorkouts(true);
+    try {
+      const data = await getData();
+      workoutsControl.set(data ?? []);
+    } catch (e) {
+    } finally {
+      setLoadingWorkouts(false);
+    }
+  };
 
   const editWorkout = (id: string, data: Partial<Workout>) => {
     const index = workouts.findIndex((w: Workout) => w.id === id);
@@ -63,7 +88,7 @@ export const useWorkoutProvider = () => {
     workoutsControl.removeAt(index);
   };
 
-  const createWorkout = (data: NewWorkoutInput) => {
+  const createWorkout = async (data: NewWorkoutInput) => {
     const createdAt = new Date().toISOString();
     const id = uuid.v4().toString();
     const newWorkout = {
@@ -73,7 +98,9 @@ export const useWorkoutProvider = () => {
       exercises: [],
     };
 
+    // save to state and local storage
     workoutsControl.push(newWorkout);
+    await storeData([...workouts, newWorkout]);
   };
 
   return {
@@ -81,6 +108,7 @@ export const useWorkoutProvider = () => {
     createWorkout,
     deleteWorkout,
     editWorkout,
+    loadingWorkouts
   };
 };
 
