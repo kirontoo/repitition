@@ -1,8 +1,8 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FlatList } from "react-native";
-import { NavigationRoute, RootStackParamList } from "./types";
 import { Text, Stack, Button, YStack, XStack } from "tamagui";
-import { useWorkoutContext } from "../providers/WorkoutProvider";
+import { useWorkoutContext } from "../../providers/WorkoutProvider";
+import { NavigationRoute, RootStackParamList } from "../../screens/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "Home">;
 

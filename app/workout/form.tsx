@@ -1,24 +1,22 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Label, Button, YStack, Input, Group, TextArea } from "tamagui";
-import { NavigationRoute, RootStackParamList } from "./types";
 import { useState } from "react";
-import { useWorkoutContext } from "../providers/WorkoutProvider";
+import { Button, YStack, Label, TextArea, Input, View } from "tamagui";
+import { useWorkoutContext } from "../../providers/WorkoutProvider";
+import { Stack, useRouter } from "expo-router";
 
-type Props = NativeStackScreenProps<RootStackParamList, "WorkoutForm">;
-export default function WorkoutFormScreen({ navigation }: Props) {
+export default function WorkoutFormScreen() {
   const { createWorkout } = useWorkoutContext();
 
   const [workoutName, setWorkoutName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [reps, setReps] = useState<string>("");
 
-  // TODO: ERRORS UI
-  // TODO: input validation
+  const router = useRouter();
 
-  const submitWorkoutInput = () => {
+  // TODO: react-hook-form and validate form + errors
+  const addNewWorkout = async () => {
     const repetitions = Number(reps);
     if (isNaN(repetitions)) {
-      // set error
+      // TODO: set error
       return;
     }
 
@@ -27,30 +25,31 @@ export default function WorkoutFormScreen({ navigation }: Props) {
       description,
       reps: repetitions,
     };
-    createWorkout(newWorkout);
+    const { id } = await createWorkout(newWorkout);
 
-    navigation.navigate(NavigationRoute.WorkoutScreen);
+    router.push({ pathname: "/workout", params: { id } });
   };
 
   return (
-    <YStack padding="$4" space>
-      <Group>
+    <YStack padding="$2" >
+      <Stack.Screen options={{ title: "Add New Workout", headerShown: true}}/>
+      <View>
         <Label htmlFor="workout-name">Workout Name</Label>
         <Input
           id="workout-name"
           onChangeText={setWorkoutName}
           value={workoutName}
         />
-      </Group>
-      <Group>
+      </View>
+      <View>
         <Label htmlFor="workout-description">Description (optional)</Label>
         <TextArea
           id="workout-description"
           onChangeText={setDescription}
           value={description}
         />
-      </Group>
-      <Group>
+      </View>
+      <View>
         <Label htmlFor="workout-repetitions">Number of Repitiions</Label>
         <Input
           id="workout-repetitions"
@@ -58,8 +57,8 @@ export default function WorkoutFormScreen({ navigation }: Props) {
           value={reps}
           keyboardType="number-pad"
         />
-      </Group>
-      <Button onPress={submitWorkoutInput}>Add Workout</Button>
+      </View>
+      <Button onPress={addNewWorkout} marginTop="$4">Add Workout</Button>
     </YStack>
   );
 }
