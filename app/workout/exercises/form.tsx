@@ -1,14 +1,21 @@
-import {  View } from "react-native";
-import { Button, YStack, Input, Label } from "tamagui";
-import { useState } from "react";
+import { View } from "react-native";
+import { Text, Button, YStack, Input, Label } from "tamagui";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useWorkoutContext } from "../../../providers/WorkoutProvider";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
-type Params = { 
-  workoutId: string; 
-  exerciseId?: string; 
-  title?: string 
+type Params = {
+  workoutId: string;
+  exerciseId?: string;
+  title?: string;
 };
+
+interface ExerciseFormValues {
+  name: string;
+  description: string;
+  duration: string;
+}
 
 export default function ExerciseFormScreen() {
   const { workoutId, title } = useLocalSearchParams<Params>();
@@ -16,22 +23,48 @@ export default function ExerciseFormScreen() {
   const router = useRouter();
 
   const headerTitle = title ?? "Add new exercise";
+  const initialValues = {
+    name: "",
+    description: "",
+    duration: "30",
+  };
 
-  const [exerciseName, setExerciseName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  // duration is in seconds
-  const [duration, setDuration] = useState<string>("");
+  const exerciseValidationSchema = yup.object().shape({
+    name: yup.string().required().min(1).max(20),
+    description: yup.string().optional().min(1).max(250),
+    duration: yup.number().required().min(1).max(300),
+  });
 
-  const submitNewExercise = async () => {
-    // TODO: input validation
+  const submitNewExercise = async ({
+    name,
+    description,
+    duration,
+  }: ExerciseFormValues) => {
+    console.log({
+
+      name,
+      description: description.length ? description : null,
+      duration: Number(duration),
+    })
     await createExercise(workoutId, {
-      name: exerciseName,
+      name,
       description: description.length ? description : null,
       duration: Number(duration),
     });
 
-    router.back();
+    router.push({
+      pathname: "/workout",
+      params: { id: workoutId },
+    });
   };
+
+  const { handleBlur, handleChange, handleSubmit, values, isValid, errors } =
+    useFormik({
+      initialValues,
+      onSubmit: submitNewExercise,
+      validationSchema: exerciseValidationSchema,
+    });
+
   return (
     <YStack space padding="$2">
       <Stack.Screen options={{ title: headerTitle, headerShown: true }} />
@@ -39,28 +72,50 @@ export default function ExerciseFormScreen() {
         <Label htmlFor="exercise-name">Exercise Name</Label>
         <Input
           id="exercise-name"
-          onChangeText={setExerciseName}
-          value={exerciseName}
+          onChangeText={handleChange("name")}
+          onBlur={handleBlur("name")}
+          value={values.name}
         />
+        {errors.name && (
+          <Text theme="red_alt2" paddingTop="$2">
+            {errors.name}
+          </Text>
+        )}
       </View>
       <View>
-        <Label htmlFor="exercise-description">Description (optional)</Label>
+        <Label htmlFor="exercise-description">
+          Description (optional) {values.description.length}/250
+        </Label>
         <Input
           id="exercise-description"
-          onChangeText={setDescription}
-          value={description}
+          onChangeText={handleChange("description")}
+          onBlur={handleBlur("description")}
+          value={values.description}
         />
+        {errors.description && (
+          <Text theme="red_alt2" paddingTop="$2">
+            {errors.description}
+          </Text>
+        )}
       </View>
       <View>
         <Label htmlFor="exercise-duration">Duration (seconds)</Label>
         <Input
           id="exercise-duration"
-          onChangeText={setDuration}
-          value={duration}
+          onChangeText={handleChange("duration")}
+          onBlur={handleBlur("duration")}
+          value={values.duration}
           keyboardType="number-pad"
         />
+        {errors.duration && (
+          <Text theme="red_alt2" paddingTop="$2">
+            {errors.duration}
+          </Text>
+        )}
       </View>
-      <Button onPress={submitNewExercise}>Add Exercise</Button>
+      <Button onPress={() => handleSubmit()} disabled={!isValid}>
+        Add Exercise
+      </Button>
     </YStack>
   );
 }
