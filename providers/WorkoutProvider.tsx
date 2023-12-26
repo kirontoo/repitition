@@ -9,13 +9,13 @@ import {
 import uuid from "react-native-uuid";
 import { getLocalWorkoutData, storeLocalWorkoutData } from "../utils/storage";
 
-interface NewWorkoutInput {
+export interface NewWorkoutInput {
   name: string;
   description: string | null;
   reps: number;
 }
 
-interface NewExerciseInput {
+export interface NewExerciseInput {
   name: string;
   description: string | null;
   duration: number;
