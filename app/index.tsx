@@ -1,5 +1,5 @@
 import { Text, Button, YStack, XStack, useTheme, H1 } from "tamagui";
-import { Stack, Link, useNavigation, useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { FlatList } from "react-native";
 import { useWorkoutContext } from "../providers/WorkoutProvider";
 
@@ -7,7 +7,6 @@ type WorkoutItemProps = { id: string; name: string; reps: number };
 
 export default function HomeScreen() {
   const data = useWorkoutContext();
-  const theme = useTheme();
   const router = useRouter();
 
   const Item = ({ id, name, reps }: WorkoutItemProps) => (
