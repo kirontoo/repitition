@@ -15,7 +15,7 @@ export interface NewWorkoutInput {
   reps: number;
 }
 
-export interface NewExerciseInput {
+export interface ExerciseInputValues {
   name: string;
   description: string | null;
   duration: number;
@@ -28,7 +28,19 @@ type WorkoutContextValue = {
   createWorkout: (data: NewWorkoutInput) => Promise<Workout>;
   getWorkoutById: (id: string) => Workout;
   loadingWorkouts: boolean;
-  createExercise: (workoutId: string, data: NewExerciseInput) => Promise<Workout>;
+  createExercise: (
+    workoutId: string,
+    data: ExerciseInputValues
+  ) => Promise<Workout>;
+  getExerciseFromWorkoutById: (
+    workoutId: string,
+    exerciseId: string
+  ) => Exercise | null;
+  updateExercise: (
+    workoutId: string,
+    exerciseId: string,
+    data: ExerciseInputValues
+  ) => Promise<void>;
 };
 
 export const WorkoutContext = createContext<WorkoutContextValue>({
@@ -38,7 +50,9 @@ export const WorkoutContext = createContext<WorkoutContextValue>({
   createWorkout: async (_) => ({} as Workout),
   loadingWorkouts: false,
   getWorkoutById: (_) => ({} as Workout),
-  createExercise: async (_i, _d) => ({} as Workout)
+  createExercise: async (_i, _d) => ({} as Workout),
+  getExerciseFromWorkoutById: (_w, _e) => null,
+  updateExercise: async (_w, _e, _d) => {},
 });
 
 export const useWorkoutContext = () => {
@@ -117,8 +131,6 @@ export const useWorkoutProvider = () => {
 
     const workoutToChange = workouts[index];
 
-    // TODO: validate data
-
     // update workout
     const updatedWorkout = Object.assign(workoutToChange, data);
 
@@ -161,9 +173,14 @@ export const useWorkoutProvider = () => {
     return workout;
   };
 
-  const createExercise = async (workoutId: string, data: NewExerciseInput) => {
+  const createExercise = async (
+    workoutId: string,
+    data: ExerciseInputValues
+  ) => {
     const targetWorkout = getWorkoutById(workoutId);
-    const workoutIndexPos = workouts.findIndex((workout) => workout.id === workoutId);
+    const workoutIndexPos = workouts.findIndex(
+      (workout) => workout.id === workoutId
+    );
 
     const exerciseId = uuid.v4().toString();
     const newExercise: Exercise = {
@@ -178,14 +195,58 @@ export const useWorkoutProvider = () => {
     return targetWorkout;
   };
 
+  const getExerciseFromWorkoutById = (
+    workoutId: string,
+    exerciseId: string
+  ) => {
+    if (exerciseId.length === 0) {
+      return null;
+    }
+
+    const { exercises } = getWorkoutById(workoutId);
+    const exercise = exercises.find((e) => e.id === exerciseId);
+
+    return exercise ?? null;
+  };
+
+  const updateExercise = async (
+    workoutId: string,
+    exerciseId: string,
+    data: ExerciseInputValues
+  ) => {
+    // find target workout
+    const workout = getWorkoutById(workoutId);
+    const workoutIndexPos = workouts.findIndex(
+      (workout) => workout.id === workoutId
+    );
+
+    // find target exercise
+    const { exercises } = workout;
+    const targetExerciseIndex = exercises.findIndex((e) => e.id === exerciseId);
+    if (targetExerciseIndex < 0) {
+      throw new Error("exercise does not exist");
+    }
+
+    // edit existing exercise
+    const newExerciseData = { ...exercises[targetExerciseIndex], ...data };
+    exercises[targetExerciseIndex] = newExerciseData;
+
+    // update workouts state
+    const workoutToReplace = { ...workout, exercises: exercises };
+    workoutsControl.updateAt(workoutIndexPos, workoutToReplace);
+    await storeLocalWorkoutData([...workouts]);
+  };
+
   return {
-    workouts,
+    createExercise,
     createWorkout,
     deleteWorkout,
     editWorkout,
-    loadingWorkouts,
+    getExerciseFromWorkoutById,
     getWorkoutById,
-    createExercise
+    loadingWorkouts,
+    updateExercise,
+    workouts,
   };
 };
 

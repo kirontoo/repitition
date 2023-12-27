@@ -4,6 +4,7 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useWorkoutContext } from "../../../providers/WorkoutProvider";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useMemo } from "react";
 
 type Params = {
   workoutId: string;
@@ -17,17 +18,36 @@ interface ExerciseFormValues {
   duration: string;
 }
 
+// passing in a exerciseId indicates edit mode rather than adding a new exercise
 export default function ExerciseFormScreen() {
-  const { workoutId, title } = useLocalSearchParams<Params>();
-  const { createExercise } = useWorkoutContext();
+  const { workoutId, title, exerciseId } = useLocalSearchParams<Params>();
+  const { updateExercise, createExercise, getExerciseFromWorkoutById } =
+    useWorkoutContext();
   const router = useRouter();
 
+  // load exercise data when in edit mode
+  const editExerciseData: Exercise | null = useMemo(
+    () => getExerciseFromWorkoutById(workoutId, exerciseId ?? ""),
+    [exerciseId]
+  );
+
+  const editMode: boolean = !!editExerciseData;
+
+  const initialValues =
+    editMode && editExerciseData
+      ? {
+          name: editExerciseData.name,
+          description: editExerciseData.description ?? "",
+          duration: editExerciseData.duration.toString(),
+        }
+      : {
+          name: "",
+          description: "",
+          duration: "30",
+        };
+
   const headerTitle = title ?? "Add new exercise";
-  const initialValues = {
-    name: "",
-    description: "",
-    duration: "30",
-  };
+  const submitButtonText = editMode ? "Save" : "Add";
 
   const exerciseValidationSchema = yup.object().shape({
     name: yup.string().required().min(1).max(20),
@@ -40,19 +60,18 @@ export default function ExerciseFormScreen() {
     description,
     duration,
   }: ExerciseFormValues) => {
-    console.log({
-
+    const newExerciseData = {
       name,
       description: description.length ? description : null,
       duration: Number(duration),
-    })
-    await createExercise(workoutId, {
-      name,
-      description: description.length ? description : null,
-      duration: Number(duration),
-    });
+    };
+    if (editMode && exerciseId) {
+      await updateExercise(workoutId, exerciseId, newExerciseData);
+    } else {
+      await createExercise(workoutId, newExerciseData);
+    }
 
-    router.push({
+    return router.push({
       pathname: "/workout",
       params: { id: workoutId },
     });
@@ -114,7 +133,7 @@ export default function ExerciseFormScreen() {
         )}
       </View>
       <Button onPress={() => handleSubmit()} disabled={!isValid}>
-        Add Exercise
+        {submitButtonText}
       </Button>
     </YStack>
   );
