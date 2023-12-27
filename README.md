@@ -1,11 +1,10 @@
 # Repitition
 
 ## Tech Stack
-- React Native
-- Typescript
+- [React Native](https://reactnative.dev)
+- [Typescript](https://www.typescriptlang.org)
+- [Tamagui Library](https://tamagui.dev)
+- [Expo](https://expo.dev)
 
 ## Todo
 
-### Questions
-- can you use a context provider within a context provider and reference the nested one from the parent
-    `<A><B></B></A>` -> within `<A>` get context of `<B>` and run operations
