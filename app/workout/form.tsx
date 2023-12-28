@@ -1,11 +1,12 @@
 import { Button, YStack, Label, TextArea, Input, View, Text } from "tamagui";
 import {
-  NewWorkoutInput,
+  WorkoutInputValues,
   useWorkoutContext,
 } from "../../providers/WorkoutProvider";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import * as yup from "yup";
 import { Formik } from "formik";
+import { useMemo } from "react";
 
 interface WorkoutFormValues {
   name: string;
@@ -13,14 +14,34 @@ interface WorkoutFormValues {
   reps: string;
 }
 
-export default function WorkoutFormScreen() {
-  const { createWorkout } = useWorkoutContext();
+type Params = {
+  workoutId?: string;
+  title?: string;
+}
 
+export default function WorkoutFormScreen() {
+  const { createWorkout, getWorkoutById, updateWorkout } = useWorkoutContext();
+  const { workoutId, title } = useLocalSearchParams<Params>();
   const router = useRouter();
-  const initValues = {
-    name: "",
-    description: "",
-    reps: "1",
+
+  // load workout data when in edit mode
+  const editWorkoutData: Workout | null = useMemo(() => {
+    if (workoutId) {
+      return getWorkoutById(workoutId);
+    }
+    return null;
+  }, [workoutId]);
+
+  const editMode: boolean = !!editWorkoutData;
+  const headerTitle = editMode && editWorkoutData
+    ? `Edit ${editWorkoutData.name}`
+    : title ?? "Add new workout";
+  const submitBtnText = editMode ? 'Save' : 'Add';
+
+  const initValues: WorkoutFormValues = {
+    name: editMode ? editWorkoutData!.name : "",
+    description: editWorkoutData!.description ?? "",
+    reps: editMode ? editWorkoutData!.reps.toString() : "1",
   };
 
   const workoutValidationSchema = yup.object().shape({
@@ -29,24 +50,28 @@ export default function WorkoutFormScreen() {
     reps: yup.number().required().min(1).max(10),
   });
 
-  const addNewWorkout = async ({name, description, reps}: WorkoutFormValues) => {
-    const repitiions = Number(reps);
-
-    const newWorkout: NewWorkoutInput = {
+  const submitWorkout = async ({ name, description, reps }: WorkoutFormValues) => {
+    const repetiions = Number(reps);
+    const newWorkout: WorkoutInputValues = {
       name,
       description,
-      reps: repitiions,
+      reps: repetiions,
     };
-    const { id } = await createWorkout(newWorkout);
+    if (editMode && workoutId) {
+      await updateWorkout(workoutId, newWorkout);
+      router.push({ pathname: "/workout", params: { id: workoutId } });
 
-    router.push({ pathname: "/workout", params: { id } });
-  };
+    } else {
+      const { id } = await createWorkout(newWorkout);
+      router.push({ pathname: "/workout", params: { id } });
+    }
+  }
 
   return (
     <Formik
       validationSchema={workoutValidationSchema}
       initialValues={initValues}
-      onSubmit={addNewWorkout}
+      onSubmit={submitWorkout}
     >
       {({
         handleSubmit,
@@ -58,7 +83,7 @@ export default function WorkoutFormScreen() {
       }) => (
         <YStack padding="$2">
           <Stack.Screen
-            options={{ title: "Add New Workout", headerShown: true }}
+            options={{ title: headerTitle, headerShown: true }}
           />
 
           <View>
@@ -112,7 +137,7 @@ export default function WorkoutFormScreen() {
             marginTop="$4"
             disabled={!isValid}
           >
-            Add Workout
+            {submitBtnText}
           </Button>
         </YStack>
       )}

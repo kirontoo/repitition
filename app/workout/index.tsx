@@ -6,10 +6,11 @@ import {
   YStack,
   useTheme,
 } from "tamagui";
+import { Feather } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWorkoutContext } from "../../providers/WorkoutProvider";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import ExerciseList from "../../components/ExerciseList";
 
 type Params = { id: string };
@@ -22,19 +23,8 @@ export default function WorkoutScreen() {
 
   const { getWorkoutById } = useWorkoutContext();
 
-  const [workout, setWorkout] = useState<Workout | null>(null);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (id) {
-      try {
-        const workoutItem = getWorkoutById(id);
-        setWorkout(workoutItem);
-      } catch (e) {
-        setError("workout does not exist");
-      }
-    }
-  }, [id]);
+  const workout: Workout | null = useMemo(() => getWorkoutById(id), [id]);
 
   if (error) {
     return (
@@ -61,10 +51,26 @@ export default function WorkoutScreen() {
     <YStack padding="$4" borderRadius="$4" backgroundColor={theme.gray1.get()}>
       <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$7">{name}</Text>
+        <Button
+          size="$2"
+          variant="outlined"
+          onPress={() => router.push({ pathname: '/workout/form', params: { workoutId: id } })}
+        >
+          <Feather name="edit" size={12} color="white" />
+        </Button>
+      </XStack>
+      {description && (
+        <Text>
+          Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
+          cillum sint consectetur cupidatat.
+        </Text>
+      )}
+      <XStack justifyContent="space-between" alignItems="center" marginTop="$2">
+        <Text fontSize="$5">Reps</Text>
         <YStack
           padding="$1"
           borderRadius="$8"
-          borderColor="black"
+          borderColor="$blue9"
           borderWidth={1}
           width="$2"
           height="$2"
@@ -74,12 +80,6 @@ export default function WorkoutScreen() {
           <Text fontSize="$5">{reps}</Text>
         </YStack>
       </XStack>
-      {description && (
-        <Text>
-          Lorem ipsum dolor sit amet, qui minim labore adipisicing minim sint
-          cillum sint consectetur cupidatat.
-        </Text>
-      )}
     </YStack>
   );
 

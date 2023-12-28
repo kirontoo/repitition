@@ -9,7 +9,7 @@ import {
 import uuid from "react-native-uuid";
 import { getLocalWorkoutData, storeLocalWorkoutData } from "../utils/storage";
 
-export interface NewWorkoutInput {
+export interface WorkoutInputValues {
   name: string;
   description: string | null;
   reps: number;
@@ -23,9 +23,9 @@ export interface ExerciseInputValues {
 
 type WorkoutContextValue = {
   workouts: Workout[];
-  editWorkout: (id: string, data: Partial<Workout>) => void;
+  updateWorkout: (id: string, data: Partial<Workout>) => Promise<void>;
   deleteWorkout: (id: string) => void;
-  createWorkout: (data: NewWorkoutInput) => Promise<Workout>;
+  createWorkout: (data: WorkoutInputValues) => Promise<Workout>;
   getWorkoutById: (id: string) => Workout;
   loadingWorkouts: boolean;
   createExercise: (
@@ -45,7 +45,7 @@ type WorkoutContextValue = {
 
 export const WorkoutContext = createContext<WorkoutContextValue>({
   workouts: [],
-  editWorkout: (_i, _d) => null,
+  updateWorkout: async (_i, _d) => {},
   deleteWorkout: (_) => null,
   createWorkout: async (_) => ({} as Workout),
   loadingWorkouts: false,
@@ -121,7 +121,7 @@ export const useWorkoutProvider = () => {
     }
   };
 
-  const editWorkout = (id: string, data: Partial<Workout>) => {
+  const updateWorkout = async (id: string, data: Partial<Workout>) => {
     const index = workouts.findIndex((w: Workout) => w.id === id);
 
     // workout does not exist
@@ -136,6 +136,8 @@ export const useWorkoutProvider = () => {
 
     workoutsControl.removeAt(index);
     workoutsControl.insertAt(index, updatedWorkout);
+
+    await storeLocalWorkoutData([...workouts]);
   };
 
   const deleteWorkout = (id: string) => {
@@ -147,7 +149,7 @@ export const useWorkoutProvider = () => {
     workoutsControl.removeAt(index);
   };
 
-  const createWorkout = async (data: NewWorkoutInput): Promise<Workout> => {
+  const createWorkout = async (data: WorkoutInputValues): Promise<Workout> => {
     const createdAt = new Date().toISOString();
     const id = uuid.v4().toString();
     const newWorkout = {
@@ -241,7 +243,7 @@ export const useWorkoutProvider = () => {
     createExercise,
     createWorkout,
     deleteWorkout,
-    editWorkout,
+    updateWorkout,
     getExerciseFromWorkoutById,
     getWorkoutById,
     loadingWorkouts,
