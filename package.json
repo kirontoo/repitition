@@ -20,7 +20,7 @@
     "@tamagui/babel-plugin": "^1.79.12",
     "@tamagui/config": "^1.79.12",
     "@tamagui/font-inter": "^1.79.12",
-    "@tamagui/lucide-icons": "^1.79.18",
+    "@tamagui/lucide-icons": "^1.79.12",
     "@tamagui/shorthands": "^1.79.12",
     "@tamagui/theme-base": "^1.79.12",
     "@tamagui/themes": "^1.79.12",
