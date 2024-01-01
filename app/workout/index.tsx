@@ -6,7 +6,7 @@ import {
   YStack,
   useTheme,
 } from "tamagui";
-import { Feather } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useWorkoutContext } from "../../providers/WorkoutProvider";
@@ -56,7 +56,7 @@ export default function WorkoutScreen() {
           variant="outlined"
           onPress={() => router.push({ pathname: '/workout/form', params: { workoutId: id } })}
         >
-          <Feather name="edit" size={12} color="white" />
+          <MaterialIcons name="edit" size={12} color="white" />
         </Button>
       </XStack>
       {description && (
