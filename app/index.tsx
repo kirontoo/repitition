@@ -1,7 +1,9 @@
-import { Text, Button, YStack, XStack, useTheme, H1 } from "tamagui";
+import { Text, Button, YStack, XStack,  H1 } from "tamagui";
+import { StyleSheet } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { FlatList } from "react-native";
 import { useWorkoutContext } from "../providers/WorkoutProvider";
+import SwipeableListItem from "../components/SwipeableListItem";
 
 type WorkoutItemProps = { id: string; name: string; reps: number };
 
@@ -9,12 +11,21 @@ export default function HomeScreen() {
   const data = useWorkoutContext();
   const router = useRouter();
 
+  const swipeLeftAction = (id: string) => {
+    router.push({ pathname: "/workout", params: { id } });
+  };
+
+  const swipeRightAction = async (id: string) => {
+    await data.deleteWorkout(id);
+  };
+
   const Item = ({ id, name, reps }: WorkoutItemProps) => (
     <Button
       key={id}
       margin="$1"
       justifyContent="flex-start"
       onPress={() => router.push({ pathname: "/workout", params: { id } })}
+      style={styles.button}
     >
       <XStack space flex={1} justifyContent="space-between" alignItems="center">
         <Text fontSize="$5">{name}</Text>
@@ -39,12 +50,17 @@ export default function HomeScreen() {
       <H1 fontSize="$8">Workouts</H1>
 
       <FlatList
-        style={{
-          flex: 1,
-          width: "100%",
-        }}
+        style={styles.list}
         data={data.workouts}
-        renderItem={({ item }) => <Item id={item.id} name={item.name} reps={item.reps} />}
+        // renderItem={({ item }) => <Item id={item.id} name={item.name} reps={item.reps} />}
+        renderItem={({ item }) => (
+          <SwipeableListItem
+            swipeRightAction={() => swipeRightAction(item.id)}
+            swipeLeftAction={() => swipeLeftAction(item.id)}
+          >
+            <Item id={item.id} name={item.name} reps={item.reps} />
+          </SwipeableListItem>
+        )}
         keyExtractor={(item) => item.id}
       />
       <YStack
@@ -57,8 +73,26 @@ export default function HomeScreen() {
           width: "100%",
         }}
       >
-        <Button onPress={() => router.push('/workout/form/')}>Create New Workout</Button>
+        <Button onPress={() => router.push("/workout/form/")}>
+          Create New Workout
+        </Button>
       </YStack>
     </YStack>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    borderRadius: 0,
+    marginLeft: 0,
+    marginRight: 0,
+  },
+  row: {
+    display: "flex",
+    justifyContent: "center",
+  },
+  list: {
+    flex: 1,
+    width: "100%",
+  },
+});

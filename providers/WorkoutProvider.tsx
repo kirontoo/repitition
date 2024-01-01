@@ -24,7 +24,7 @@ export interface ExerciseInputValues {
 type WorkoutContextValue = {
   workouts: Workout[];
   updateWorkout: (id: string, data: Partial<Workout>) => Promise<void>;
-  deleteWorkout: (id: string) => void;
+  deleteWorkout: (id: string) => Promise<void>;
   createWorkout: (data: WorkoutInputValues) => Promise<Workout>;
   getWorkoutById: (id: string) => Workout;
   loadingWorkouts: boolean;
@@ -46,7 +46,7 @@ type WorkoutContextValue = {
 export const WorkoutContext = createContext<WorkoutContextValue>({
   workouts: [],
   updateWorkout: async (_i, _d) => {},
-  deleteWorkout: (_) => null,
+  deleteWorkout: async (_) => {},
   createWorkout: async (_) => ({} as Workout),
   loadingWorkouts: false,
   getWorkoutById: (_) => ({} as Workout),
@@ -140,13 +140,14 @@ export const useWorkoutProvider = () => {
     await storeLocalWorkoutData([...workouts]);
   };
 
-  const deleteWorkout = (id: string) => {
+  const deleteWorkout = async (id: string) => {
     const index = workouts.findIndex((w) => w.id === id);
     if (index < 0) {
       return;
     }
 
     workoutsControl.removeAt(index);
+    await storeLocalWorkoutData([...workouts]);
   };
 
   const createWorkout = async (data: WorkoutInputValues): Promise<Workout> => {
