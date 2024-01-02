@@ -57,7 +57,7 @@ function RootLayoutNav() {
   const scheme = useColorScheme();
   return (
     <TamaguiProvider config={config}>
-      <Theme name={scheme === "dark" ? "dark" : "light"}>
+      <Theme name={scheme === "dark" ? "blue" : "green"}>
         <ThemeProvider value={scheme === "light" ? DefaultTheme : DarkTheme}>
           <WorkoutProvider>
             <Stack
