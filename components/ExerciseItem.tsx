@@ -1,5 +1,6 @@
 import { XStack, Text, Button, Stack } from "tamagui";
 import { useRouter } from "expo-router";
+import { StyleSheet } from "react-native";
 
 interface ExerciseItemProps {
   exercise: Exercise;
@@ -13,6 +14,7 @@ export default function ExerciseItem({
   const router = useRouter();
   return (
     <Button
+      style={styles.button}
       margin="$1"
       onPress={() =>
         router.push({
@@ -42,3 +44,11 @@ export default function ExerciseItem({
     </Button>
   );
 }
+
+const styles = StyleSheet.create({
+  button: {
+    borderRadius: 0,
+    marginLeft: 0,
+    marginRight: 0,
+  }
+});

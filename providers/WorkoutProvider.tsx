@@ -41,6 +41,7 @@ type WorkoutContextValue = {
     exerciseId: string,
     data: ExerciseInputValues
   ) => Promise<void>;
+  deleteExercise: (workoutId: string, exerciseId: string) => Promise<void>;
 };
 
 export const WorkoutContext = createContext<WorkoutContextValue>({
@@ -53,6 +54,7 @@ export const WorkoutContext = createContext<WorkoutContextValue>({
   createExercise: async (_i, _d) => ({} as Workout),
   getExerciseFromWorkoutById: (_w, _e) => null,
   updateExercise: async (_w, _e, _d) => {},
+  deleteExercise: async () => {},
 });
 
 export const useWorkoutContext = () => {
@@ -235,7 +237,27 @@ export const useWorkoutProvider = () => {
     exercises[targetExerciseIndex] = newExerciseData;
 
     // update workouts state
-    const workoutToReplace = { ...workout, exercises: exercises };
+    const workoutToReplace = {
+      ...workout,
+      exercises,
+    };
+    workoutsControl.updateAt(workoutIndexPos, workoutToReplace);
+    await storeLocalWorkoutData([...workouts]);
+  };
+
+  const deleteExercise = async (workoutId: string, exerciseId: string) => {
+    const workout = getWorkoutById(workoutId);
+    const workoutIndexPos = workouts.findIndex(
+      (workout) => workout.id === workoutId
+    );
+
+    const exercises = workout.exercises.filter(({ id }) => id !== exerciseId);
+
+    // update workout state
+    const workoutToReplace = {
+      ...workout,
+      exercises,
+    };
     workoutsControl.updateAt(workoutIndexPos, workoutToReplace);
     await storeLocalWorkoutData([...workouts]);
   };
@@ -250,6 +272,7 @@ export const useWorkoutProvider = () => {
     loadingWorkouts,
     updateExercise,
     workouts,
+    deleteExercise,
   };
 };
 
