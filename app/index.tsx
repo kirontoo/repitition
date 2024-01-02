@@ -52,7 +52,6 @@ export default function HomeScreen() {
       <FlatList
         style={styles.list}
         data={data.workouts}
-        // renderItem={({ item }) => <Item id={item.id} name={item.name} reps={item.reps} />}
         renderItem={({ item }) => (
           <SwipeableListItem
             swipeRightAction={() => swipeRightAction(item.id)}
