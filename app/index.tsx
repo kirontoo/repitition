@@ -11,11 +11,11 @@ export default function HomeScreen() {
   const data = useWorkoutContext();
   const router = useRouter();
 
-  const swipeLeftAction = (id: string) => {
+  const swipeRightAction = (id: string) => {
     router.push({ pathname: "/workout", params: { id } });
   };
 
-  const swipeRightAction = async (id: string) => {
+  const swipeLeftAction = async (id: string) => {
     await data.deleteWorkout(id);
   };
 
