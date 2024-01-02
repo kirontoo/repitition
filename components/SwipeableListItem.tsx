@@ -1,6 +1,6 @@
 import { Animated, StyleSheet, I18nManager } from "react-native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
-import { ReactNode } from "react";
+import { ReactNode, useRef } from "react";
 import { View, Button, useTheme } from "tamagui";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -23,6 +23,7 @@ export default function SwipeableListItem({
   swipeLeftAction,
 }: SwipeableListItemProps) {
   const theme = useTheme();
+  const swipeableRef = useRef<Swipeable>(null);
 
   // Delete Button
   const renderRightActions = (_, dragX) => {
@@ -33,7 +34,10 @@ export default function SwipeableListItem({
     });
     return (
       <Button
-        onPress={swipeLeftAction}
+        onPress={() => {
+          swipeLeftAction();
+          swipeableRef?.current?.close();
+        }}
         style={styles.rightButton}
         backgroundColor={theme.red8}
       >
@@ -51,7 +55,10 @@ export default function SwipeableListItem({
     });
     return (
       <Button
-        onPress={swipeRightAction}
+        onPress={() => {
+          swipeRightAction();
+          swipeableRef?.current?.close();
+        }}
         style={styles.leftButton}
         backgroundColor={theme.green8}
       >
@@ -62,6 +69,7 @@ export default function SwipeableListItem({
 
   return (
     <Swipeable
+      ref={swipeableRef}
       renderRightActions={renderRightActions}
       renderLeftActions={renderLeftActions}
       rightThreshold={80}
