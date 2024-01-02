@@ -33,7 +33,7 @@ export default function SwipeableListItem({
     });
     return (
       <Button
-        onPress={swipeRightAction}
+        onPress={swipeLeftAction}
         style={styles.rightButton}
         backgroundColor={theme.red8}
       >
@@ -51,7 +51,7 @@ export default function SwipeableListItem({
     });
     return (
       <Button
-        onPress={swipeLeftAction}
+        onPress={swipeRightAction}
         style={styles.leftButton}
         backgroundColor={theme.green8}
       >
