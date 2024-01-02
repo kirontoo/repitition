@@ -26,7 +26,10 @@ export default function SwipeableListItem({
   const swipeableRef = useRef<Swipeable>(null);
 
   // Delete Button
-  const renderRightActions = (_, dragX) => {
+  const renderRightActions = (
+    _progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>
+  ) => {
     dragX.interpolate({
       inputRange: [-80, 0],
       outputRange: [1, 0],
@@ -47,7 +50,10 @@ export default function SwipeableListItem({
   };
 
   // Edit Button
-  const renderLeftActions = (_, dragX) => {
+  const renderLeftActions = (
+    _progress: Animated.AnimatedInterpolation<number>,
+    dragX: Animated.AnimatedInterpolation<number>
+  ) => {
     dragX.interpolate({
       inputRange: [-80, 0],
       outputRange: [1, 0],
