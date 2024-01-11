@@ -11,8 +11,12 @@ export default function TimerScreen() {
   const theme = useTheme();
 
   // TODO:
-  const formatToMinAndSec = (init: number) : string => {
+  const formatToMinAndSec = (init: number): string => {
     return "";
+  };
+
+  const calcTimerPercentage = (initTimer: number): number => {
+    return (timer.currentTime / initTimer) * 100;
   }
 
   return (
@@ -36,14 +40,24 @@ export default function TimerScreen() {
           size={200}
           width={8}
           tintColor={theme.color8.val}
-          fill={(timer.currentTime / (30 * 1000)) * 100}
+          fill={calcTimerPercentage(30 * 1000)}
           onAnimationComplete={() => console.log("onAnimationComplete")}
         >
           {() => <Text fontSize="$10">{timer.currentTime / 1000}</Text>}
         </AnimatedCircularProgress>
-        <Button circular>
-          <MaterialIcons name="pause" size={16} color={theme.color.val} />
-        </Button>
+        {timer.isPaused ? (
+          <Button circular onPress={timer.unpause}>
+            <MaterialIcons
+              name="play-arrow"
+              size={16}
+              color={theme.color.val}
+            />
+          </Button>
+        ) : (
+          <Button circular onPress={timer.pause}>
+            <MaterialIcons name="pause" size={16} color={theme.color.val} />
+          </Button>
+        )}
       </YStack>
 
       <XStack
@@ -60,4 +74,3 @@ export default function TimerScreen() {
     </YStack>
   );
 }
-
