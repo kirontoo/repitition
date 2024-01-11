@@ -39,14 +39,14 @@ export default function WorkoutFormScreen() {
   const submitBtnText = editMode ? 'Save' : 'Add';
 
   const initValues: WorkoutFormValues = {
-    name: editMode ? editWorkoutData!.name : "",
-    description: editWorkoutData!.description ?? "",
-    reps: editMode ? editWorkoutData!.reps.toString() : "1",
+    name: editWorkoutData?.name ?? "",
+    description: editWorkoutData?.description ?? "",
+    reps: editWorkoutData?.reps.toString() ?? "1",
   };
 
   const workoutValidationSchema = yup.object().shape({
     name: yup.string().required().min(1).max(20),
-    description: yup.string().optional().min(1).max(250),
+    description: yup.string().optional().min(1).max(250).default(""),
     reps: yup.number().required().min(1).max(10),
   });
 
