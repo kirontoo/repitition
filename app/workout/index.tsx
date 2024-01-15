@@ -48,13 +48,18 @@ export default function WorkoutScreen() {
     reps: number;
     description?: string | null;
   }) => (
-    <YStack padding="$4" borderRadius="$4" backgroundColor={theme.gray1.get()}>
+    <YStack padding="$4" borderRadius="$4" backgroundColor={theme.gray1.get()} space="$2">
       <XStack justifyContent="space-between" alignItems="center">
         <Text fontSize="$7">{name}</Text>
         <Button
           size="$2"
           variant="outlined"
-          onPress={() => router.push({ pathname: '/workout/form', params: { workoutId: id } })}
+          onPress={() =>
+            router.push({
+              pathname: "/workout/form",
+              params: { workoutId: id },
+            })
+          }
         >
           <MaterialIcons name="edit" size={12} color="white" />
         </Button>
@@ -80,6 +85,14 @@ export default function WorkoutScreen() {
           <Text fontSize="$5">{reps}</Text>
         </YStack>
       </XStack>
+      <Button
+        size="$2"
+        onPress={() =>
+          router.push({ pathname: "/timer", params: { workoutId: id } })
+        }
+      >
+        Start
+      </Button>
     </YStack>
   );
 
