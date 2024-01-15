@@ -21,12 +21,13 @@ export default function TimerScreen() {
   const exercises = getExercisesFromWorkout(workoutId);
   const [currExerciseIndex, setCurrExerciseIndex] = useState<number>(0);
 
+  // only two modes: workout or break time
   const [mode, setMode] = useState<"break" | "workout">("workout");
 
   // break duration: 30s
   const breakDuration = 30000;
 
-  const exercise = useMemo(
+  const currentExercise = useMemo(
     () => exercises[currExerciseIndex],
     [currExerciseIndex]
   );
@@ -35,22 +36,34 @@ export default function TimerScreen() {
     return seconds * 1000;
   };
 
-  const onTimerEnds = () => {
-    if (mode === "break") {
-      // load & set the next exercise timer
-      if (currExerciseIndex < exercises.length) {
-        setMode("workout");
+  const nextExercise = () => {
+    if (currExerciseIndex + 1 === exercises.length) {
+      // reached end of exercises queue, stop all timers
+      timer.stop();
+      return;
+    }
 
-        setCurrExerciseIndex((i) => ++i);
-        timer.set(secondsToMilliseconds(exercises[currExerciseIndex].duration));
-      }
-    } else if (mode === "workout") {
+    // load & set the next exercise timer
+    if (currExerciseIndex <= exercises.length) {
+      setMode("workout");
+      setCurrExerciseIndex((i) => ++i);
+      timer.stop();
+      timer.set(secondsToMilliseconds(exercises[currExerciseIndex].duration));
+      timer.start();
+    }
+  };
+
+  const onTimerEnds = () => {
+    if (mode === "workout") {
+      // reached end of exercises queue, stop all timers
       if (currExerciseIndex + 1 === exercises.length) {
-        // reached end of exercises queue, stop all timers
         return;
       }
       setMode("break");
       timer.set(breakDuration);
+    } else {
+      // mode: "break"
+      nextExercise();
     }
   };
 
@@ -66,7 +79,7 @@ export default function TimerScreen() {
   };
 
   const timerProgressPercentage = useMemo(() => {
-    if (!exercise) {
+    if (!currentExercise) {
       // 100% progress
       return 100;
     }
@@ -74,9 +87,9 @@ export default function TimerScreen() {
     if (mode === "break") {
       return calcTimerPercentage(breakDuration);
     } else {
-      return calcTimerPercentage(exercise.duration);
+      return calcTimerPercentage(currentExercise.duration);
     }
-  }, [mode, exercise]);
+  }, [mode, currentExercise]);
 
   // @param time in milliseconds
   const formatToMinAndSec = (time: number): string => {
@@ -86,11 +99,6 @@ export default function TimerScreen() {
 
     const secondsStr = seconds < 10 ? `0${seconds}` : seconds;
     return `${minutes}:${secondsStr}`;
-  };
-
-  const nextExercise = () => {
-    timer.stop();
-    // TODO: load next exercise
   };
 
   return (
@@ -109,10 +117,10 @@ export default function TimerScreen() {
         </Button>
       </XStack>
 
-      <YStack alignItems="center" justifyContent="center" space="$3">
-        <YStack justifyContent="center">
+      <YStack alignItems="center" justifyContent="center" space="$4">
+        <YStack justifyContent="center" padding={0} margin={0}>
           <H1 fontSize="$8" textAlign="center">
-            {mode === "break" ? "Break" : exercise.name}
+            {mode === "break" ? "Break" : currentExercise.name}
           </H1>
           {mode === "break" && (
             <Text textAlign="center" fontSize="$4">
