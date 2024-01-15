@@ -32,6 +32,7 @@ type WorkoutContextValue = {
     workoutId: string,
     data: ExerciseInputValues
   ) => Promise<Workout>;
+  getExercisesFromWorkout: (workoutId: string) => Exercise[];
   getExerciseFromWorkoutById: (
     workoutId: string,
     exerciseId: string
@@ -52,6 +53,7 @@ export const WorkoutContext = createContext<WorkoutContextValue>({
   loadingWorkouts: false,
   getWorkoutById: (_) => ({} as Workout),
   createExercise: async (_i, _d) => ({} as Workout),
+  getExercisesFromWorkout: (_) => [],
   getExerciseFromWorkoutById: (_w, _e) => null,
   updateExercise: async (_w, _e, _d) => {},
   deleteExercise: async () => {},
@@ -79,7 +81,7 @@ const MOCK_DATA = {
       name: "Swallow",
       description:
         "quam sollicitudin vitae consectetuer eget rutrum at lorem integer tincidunt ante vel ipsum praesent blandit lacinia erat vestibulum sed magna",
-      duration: 69,
+      duration: 10,
     },
     {
       id: "657218d56c6186c1a50bc403",
@@ -214,6 +216,11 @@ export const useWorkoutProvider = () => {
     return exercise ?? null;
   };
 
+  const getExercisesFromWorkout = (workoutId: string): Exercise[] => {
+    const { exercises } = getWorkoutById(workoutId);
+    return exercises;
+  };
+
   const updateExercise = async (
     workoutId: string,
     exerciseId: string,
@@ -268,6 +275,7 @@ export const useWorkoutProvider = () => {
     deleteWorkout,
     updateWorkout,
     getExerciseFromWorkoutById,
+    getExercisesFromWorkout,
     getWorkoutById,
     loadingWorkouts,
     updateExercise,
