@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWorkoutContext } from "../providers/WorkoutProvider";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 type Params = {
   workoutId: string;
@@ -15,6 +15,7 @@ export default function TimerScreen() {
   const inset = useSafeAreaInsets();
   const theme = useTheme();
 
+  // load exercises
   const { workoutId } = useLocalSearchParams<Params>();
   const { getExercisesFromWorkout } = useWorkoutContext();
   const exercises = getExercisesFromWorkout(workoutId);
@@ -22,15 +23,26 @@ export default function TimerScreen() {
 
   const [mode, setMode] = useState<"break" | "workout">("workout");
 
+  // break duration: 30s
+  const breakDuration = 30000;
+
+  const exercise = useMemo(
+    () => exercises[currExerciseIndex],
+    [currExerciseIndex]
+  );
+
+  const secondsToMilliseconds = (seconds: number) => {
+    return seconds * 1000;
+  };
+
   const onTimerEnds = () => {
     if (mode === "break") {
-      // current mode is "break"
       // load & set the next exercise timer
       if (currExerciseIndex < exercises.length) {
         setMode("workout");
 
         setCurrExerciseIndex((i) => ++i);
-        timer.set(exercises[currExerciseIndex].duration * 1000);
+        timer.set(secondsToMilliseconds(exercises[currExerciseIndex].duration));
       }
     } else if (mode === "workout") {
       if (currExerciseIndex + 1 === exercises.length) {
@@ -38,7 +50,7 @@ export default function TimerScreen() {
         return;
       }
       setMode("break");
-      timer.set(30 * 1000);
+      timer.set(breakDuration);
     }
   };
 
@@ -48,18 +60,32 @@ export default function TimerScreen() {
     onTimerEnds
   );
 
+  // @param initialTime in milliseconds
+  const calcTimerPercentage = (initialTime: number): number => {
+    return (timer.currentTime / initialTime) * 100;
+  };
+
+  const timerProgressPercentage = useMemo(() => {
+    if (!exercise) {
+      // 100% progress
+      return 100;
+    }
+
+    if (mode === "break") {
+      return calcTimerPercentage(breakDuration);
+    } else {
+      return calcTimerPercentage(exercise.duration);
+    }
+  }, [mode, exercise]);
+
   // @param time in milliseconds
   const formatToMinAndSec = (time: number): string => {
     const timeInSeconds = time / 1000;
     const seconds = timeInSeconds % 60;
     const minutes = Math.floor(timeInSeconds / 60);
 
-    return `${minutes}:${seconds == 0 ? "00" : seconds}`;
-  };
-
-  // @param initialTime in milliseconds
-  const calcTimerPercentage = (initialTime: number): number => {
-    return (timer.currentTime / initialTime) * 100;
+    const secondsStr = seconds < 10 ? `0${seconds}` : seconds;
+    return `${minutes}:${secondsStr}`;
   };
 
   const nextExercise = () => {
@@ -83,14 +109,22 @@ export default function TimerScreen() {
         </Button>
       </XStack>
 
-      <YStack alignItems="center" justifyContent="center" space="$4">
-        <H1 fontSize="$8">Exercise name here</H1>
-        <H1 fontSize="$8">mode: {mode}</H1>
+      <YStack alignItems="center" justifyContent="center" space="$3">
+        <YStack justifyContent="center">
+          <H1 fontSize="$8" textAlign="center">
+            {mode === "break" ? "Break" : exercise.name}
+          </H1>
+          {mode === "break" && (
+            <Text textAlign="center" fontSize="$4">
+              Rest up!
+            </Text>
+          )}
+        </YStack>
         <AnimatedCircularProgress
           size={240}
           width={8}
           tintColor={theme.color8.val}
-          fill={calcTimerPercentage(30 * 1000)}
+          fill={timerProgressPercentage}
         >
           {() => (
             <Text fontSize="$9" textAlign="center">
