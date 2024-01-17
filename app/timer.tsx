@@ -17,9 +17,11 @@ export default function TimerScreen() {
 
   // load exercises
   const { workoutId } = useLocalSearchParams<Params>();
-  const { getExercisesFromWorkout } = useWorkoutContext();
-  const exercises = getExercisesFromWorkout(workoutId);
+  const { getExercisesFromWorkout, getWorkoutById } = useWorkoutContext();
+  const workout = getWorkoutById(workoutId);
+  const exercises = workout.exercises;
   const [currExerciseIndex, setCurrExerciseIndex] = useState<number>(0);
+  const [currRep, setCurrRep] = useState<number>(1);
 
   // only two modes: workout or break time
   const [mode, setMode] = useState<"break" | "workout">("workout");
@@ -38,7 +40,7 @@ export default function TimerScreen() {
 
   const nextExercise = () => {
     if (currExerciseIndex + 1 === exercises.length) {
-      // reached end of exercises queue, stop all timers
+      // reached end of exercises queue, finished 1 rep
       timer.stop();
       return;
     }
@@ -62,7 +64,7 @@ export default function TimerScreen() {
       setMode("break");
       timer.set(breakDuration);
     } else {
-      // mode: "break"
+      // if curr mode: "break"
       nextExercise();
     }
   };
@@ -122,6 +124,11 @@ export default function TimerScreen() {
           <H1 fontSize="$8" textAlign="center">
             {mode === "break" ? "Break" : currentExercise.name}
           </H1>
+          {mode === "workout" && (
+            <Text fontSize="$5" textAlign="center">
+              ({currExerciseIndex + 1}/{exercises && exercises.length})
+            </Text>
+          )}
           {mode === "break" && (
             <Text textAlign="center" fontSize="$4">
               Rest up!
@@ -161,7 +168,9 @@ export default function TimerScreen() {
         alignItems="center"
         marginBottom="$2"
       >
-        <Text fontSize="$5">2/10</Text>
+        <Text fontSize="$5">
+          {currRep}/{workout && workout.reps}
+        </Text>
         <Button variant="outlined" size="$2" unstyled>
           <MaterialIcons
             name="skip-next"
