@@ -18,19 +18,20 @@ export default function TimerScreen() {
 
   // load exercises
   const { workoutId } = useLocalSearchParams<Params>();
-  const { getExercisesFromWorkout, getWorkoutById } = useWorkoutContext();
+  const { getWorkoutById } = useWorkoutContext();
   const workout = getWorkoutById(workoutId);
   const exercises = workout.exercises;
   const [currExerciseIndex, setCurrExerciseIndex] = useState<number>(0);
   const [currRep, setCurrRep] = useState<number>(1);
 
   // only two modes: workout or break time
-  const [mode, setMode] = useState<"break" | "workout" | "long-break">(
-    "workout"
-  );
+  const [mode, setMode] = useState<
+    "break" | "workout" | "long-break" | "end-workout"
+  >("workout");
 
   // break duration: 30s
   const breakDuration = 30000;
+  // long break duration: 1min 30s;
   const longBreakDuration = 63000;
 
   const currentExercise = useMemo(
@@ -42,16 +43,6 @@ export default function TimerScreen() {
     if (currExerciseIndex + 1 === exercises.length) {
       // reached end of exercises queue, finished 1 rep
       timer.stop();
-
-      // start long break
-      if (currRep < workout.reps) {
-        timer.set(longBreakDuration);
-        timer.start();
-      } else {
-        timer.stop();
-        // end of reps, finished workout!
-      }
-      return;
     } else if (currExerciseIndex <= exercises.length) {
       // load & set the next exercise timer
       setMode("workout");
@@ -62,22 +53,38 @@ export default function TimerScreen() {
     }
   };
 
+  const nextRep = () => {
+    if (currRep < workout.reps) {
+      setMode("workout");
+      setCurrRep((r) => r + 1);
+      setCurrExerciseIndex(0);
+      timer.set(secondsToMilliseconds(exercises[0].duration));
+      timer.start();
+    } else {
+      // end of reps, finished workout!
+      timer.stop();
+    }
+  };
+
   const onTimerEnds = () => {
     if (mode === "workout") {
-      // reached end of exercises queue, stop all timers
       if (currExerciseIndex + 1 === exercises.length) {
+        if (currRep < workout.reps) {
+          // reached end of exercises queue, start long break if still reps
+          setMode("long-break");
+          timer.set(longBreakDuration);
+        } else {
+          timer.stop();
+          setMode("end-workout");
+        }
         return;
       }
+
       setMode("break");
       timer.set(breakDuration);
     } else if (mode === "long-break") {
       // start next rep
-      // next rep
-      if (currRep < workout.reps) {
-        setCurrRep((r) => r++);
-        setCurrExerciseIndex(0);
-        timer.set(secondsToMilliseconds(exercises[0].duration));
-      }
+      nextRep();
     } else {
       // if curr mode: "break"
       nextExercise();
@@ -96,7 +103,7 @@ export default function TimerScreen() {
   };
 
   const timerProgressPercentage = useMemo(() => {
-    if (!currentExercise) {
+    if (!currentExercise || mode == "end-workout") {
       // 100% progress
       return 100;
     }
