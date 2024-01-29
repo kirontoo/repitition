@@ -6,7 +6,7 @@ import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWorkoutContext } from "../providers/WorkoutProvider";
 import { useMemo, useState } from "react";
-import { formatToMinAndSec} from "../utils/time";
+import { formatToMinAndSec, secondsToMilliseconds } from "../utils/time";
 
 type Params = {
   workoutId: string;
@@ -37,10 +37,6 @@ export default function TimerScreen() {
     () => exercises[currExerciseIndex],
     [currExerciseIndex]
   );
-
-  const secondsToMilliseconds = (seconds: number) => {
-    return seconds * 1000;
-  };
 
   const nextExercise = () => {
     if (currExerciseIndex + 1 === exercises.length) {
@@ -110,9 +106,11 @@ export default function TimerScreen() {
     } else if (mode === "long-break") {
       return calcTimerPercentage(longBreakDuration);
     } else {
-      return calcTimerPercentage(currentExercise.duration * 1000);
+      return calcTimerPercentage(
+        secondsToMilliseconds(currentExercise.duration)
+      );
     }
-  }, [mode, currentExercise.duration, timer]);
+  }, [mode, currentExercise, timer]);
 
   return (
     <YStack

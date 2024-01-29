@@ -7,4 +7,8 @@ export function formatToMinAndSec(time: number): string {
   const secondsStr = seconds < 10 ? `0${seconds}` : seconds;
   return `${minutes}:${secondsStr}`;
 };
- 
+
+
+export function secondsToMilliseconds(seconds: number): number {
+  return seconds * 1000;
+};
