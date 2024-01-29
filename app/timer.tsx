@@ -6,6 +6,7 @@ import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useWorkoutContext } from "../providers/WorkoutProvider";
 import { useMemo, useState } from "react";
+import { formatToMinAndSec} from "../utils/time";
 
 type Params = {
   workoutId: string;
@@ -24,10 +25,13 @@ export default function TimerScreen() {
   const [currRep, setCurrRep] = useState<number>(1);
 
   // only two modes: workout or break time
-  const [mode, setMode] = useState<"break" | "workout">("workout");
+  const [mode, setMode] = useState<"break" | "workout" | "long-break">(
+    "workout"
+  );
 
   // break duration: 30s
   const breakDuration = 30000;
+  const longBreakDuration = 63000;
 
   const currentExercise = useMemo(
     () => exercises[currExerciseIndex],
@@ -42,11 +46,18 @@ export default function TimerScreen() {
     if (currExerciseIndex + 1 === exercises.length) {
       // reached end of exercises queue, finished 1 rep
       timer.stop();
-      return;
-    }
 
-    // load & set the next exercise timer
-    if (currExerciseIndex <= exercises.length) {
+      // start long break
+      if (currRep < workout.reps) {
+        timer.set(longBreakDuration);
+        timer.start();
+      } else {
+        timer.stop();
+        // end of reps, finished workout!
+      }
+      return;
+    } else if (currExerciseIndex <= exercises.length) {
+      // load & set the next exercise timer
       setMode("workout");
       setCurrExerciseIndex((i) => ++i);
       timer.stop();
@@ -63,6 +74,14 @@ export default function TimerScreen() {
       }
       setMode("break");
       timer.set(breakDuration);
+    } else if (mode === "long-break") {
+      // start next rep
+      // next rep
+      if (currRep < workout.reps) {
+        setCurrRep((r) => r++);
+        setCurrExerciseIndex(0);
+        timer.set(secondsToMilliseconds(exercises[0].duration));
+      }
     } else {
       // if curr mode: "break"
       nextExercise();
@@ -88,20 +107,12 @@ export default function TimerScreen() {
 
     if (mode === "break") {
       return calcTimerPercentage(breakDuration);
+    } else if (mode === "long-break") {
+      return calcTimerPercentage(longBreakDuration);
     } else {
       return calcTimerPercentage(currentExercise.duration);
     }
   }, [mode, currentExercise]);
-
-  // @param time in milliseconds
-  const formatToMinAndSec = (time: number): string => {
-    const timeInSeconds = time / 1000;
-    const seconds = timeInSeconds % 60;
-    const minutes = Math.floor(timeInSeconds / 60);
-
-    const secondsStr = seconds < 10 ? `0${seconds}` : seconds;
-    return `${minutes}:${secondsStr}`;
-  };
 
   return (
     <YStack
@@ -168,9 +179,12 @@ export default function TimerScreen() {
         alignItems="center"
         marginBottom="$2"
       >
-        <Text fontSize="$5">
-          {currRep}/{workout && workout.reps}
-        </Text>
+        <YStack>
+          <Text fontSize="$1">Reps</Text>
+          <Text fontSize="$5">
+            {currRep}/{workout && workout.reps}
+          </Text>
+        </YStack>
         <Button variant="outlined" size="$2" unstyled>
           <MaterialIcons
             name="skip-next"
