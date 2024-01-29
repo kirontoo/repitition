@@ -110,9 +110,9 @@ export default function TimerScreen() {
     } else if (mode === "long-break") {
       return calcTimerPercentage(longBreakDuration);
     } else {
-      return calcTimerPercentage(currentExercise.duration);
+      return calcTimerPercentage(currentExercise.duration * 1000);
     }
-  }, [mode, currentExercise]);
+  }, [mode, currentExercise.duration, timer]);
 
   return (
     <YStack
